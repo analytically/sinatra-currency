@@ -1,7 +1,7 @@
 sinatra-currency
 ================
 
-Simple app demonstrating 
+Ruby+Sinatra tech demo that imports the ECB currency rates and provides a web interface. Demonstrates the use of:
 
   - [Sinatra](http://www.sinatrarb.com/)
   - [HAML](http://haml.info/) - embedded Sinatra templates
@@ -10,6 +10,8 @@ Simple app demonstrating
   - [Twitter Bootstrap 3.0](http://getbootstrap.com/)
   - [Chosen](http://harvesthq.github.io/chosen/)
   - [Parsley.js](http://parsleyjs.org/)
+
+Follow [@analytically](http://twitter.com/analytically) for updates.
 
 ![See](see.gif)
 
