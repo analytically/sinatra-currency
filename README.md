@@ -20,8 +20,15 @@ Simple app demonstrating
 
 ## Running
 
+First, dump the rates from [http://www.ecb.europa.eu/stats/eurofxref/eurofxref-hist-90d.xml](http://www.ecb.europa.eu/stats/eurofxref/eurofxref-hist-90d.xml) to MongoDB:
+
 `ruby dump_rates.rb`
+
+Then start the actual app:
+
 `ruby app.rb`
+
+Next, point your browser to [http://localhost:4567](http://localhost:4567).
 
 ## Todo
 
@@ -29,5 +36,5 @@ Simple app demonstrating
 
 # Screenshots
 
-[Screenshot](screenshot.png)
+![Screenshot](screenshot.png)
 
