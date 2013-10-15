@@ -98,7 +98,6 @@ __END__
           See my other <a href="https://github.com/analytically" style="color: #555533;">work on GitHub</a>.
 
     %div.container
-      %h1 FX-u-like
       = yield
 
 @@ index
@@ -127,10 +126,10 @@ __END__
             %option(value=c)
               = c
   %div.form-group
-    %button.btn.btn-primary(type='submit') Go forth and Convert!
+    %button.btn.btn-primary(type='submit') Go Forth and Convert!
     or
     %a(href='http://www.yahoo.com') Cancel
 
 @@ converted
-%h3== Conversion successful: on #{@date}, #{@amount} #{@from} is <b>#{@converted} #{@to}</b>
+%h3== On #{@date}, #{@amount} #{@from} is <b>#{@converted} #{@to}</b>
 %a(href='/') Again
