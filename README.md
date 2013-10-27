@@ -22,6 +22,15 @@ Follow [@analytically](http://twitter.com/analytically) for updates.
 
 ## Running
 
+Make sure all dependencies are installed:
+
+```sh
+gem install nokogiri
+gem install money
+gem install haml
+gem install redcarpet
+```
+
 First, dump the rates from [http://www.ecb.europa.eu/stats/eurofxref/eurofxref-hist-90d.xml](http://www.ecb.europa.eu/stats/eurofxref/eurofxref-hist-90d.xml) to MongoDB:
 
 ```sh
