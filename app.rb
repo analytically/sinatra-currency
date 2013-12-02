@@ -1,3 +1,6 @@
+require 'rubygems'
+require 'bundler/setup'
+
 require 'mongo'
 require 'sinatra'
 require 'money'
@@ -5,52 +8,55 @@ require 'haml'
 require 'redcarpet'
 
 include Mongo
+enable :inline_templates
 
-get '/' do
-  @now = DateTime.now.strftime('%Y-%m-%d')
-  @currencies = ExchangeRate.currencies << 'EUR'
+class SinatraCurrency < Sinatra::Application
+  get '/' do
+    @now = DateTime.now.strftime('%Y-%m-%d')
+    @currencies = ExchangeRate.currencies << 'EUR'
 
-  haml :index
-end
-
-post '/fx' do
-  @date = Date.parse(params[:date]).strftime('%Y-%m-%d')
-  @amount = params[:amount].to_f
-  @from = params[:from]
-  @to = params[:to]
-
-  @converted = ExchangeRate.new(@date, @from, @to).convert(@amount)
-  haml :converted
-end
-
-class ExchangeRate
-  @@mongo_client = MongoClient.new('localhost', 27017)
-  @@db = @@mongo_client.db('sinatracurrency')
-  @@ratesCollection = @@db.collection('rates')
-
-  def initialize(date, from_currency, to_currency)
-    @date = date
-    @from_currency = from_currency
-    @to_currency = to_currency
+    haml :index
   end
 
-  def self.currencies
-    @@ratesCollection.distinct('c').sort
+  post '/fx' do
+    @date = Date.parse(params[:date]).strftime('%Y-%m-%d')
+    @amount = params[:amount].to_f
+    @from = params[:from]
+    @to = params[:to]
+
+    @converted = ExchangeRate.new(@date, @from, @to).convert(@amount)
+    haml :converted
   end
 
-  def convert(amount)
-    @@ratesCollection.find('d' => @date).to_a.each do |doc|
-      Money.add_rate("EUR", doc['c'], doc['r'].to_f)
+  class ExchangeRate
+    @@mongo_client = MongoClient.new('localhost', 27017)
+    @@db = @@mongo_client.db('sinatracurrency')
+    @@ratesCollection = @@db.collection('rates')
+
+    def initialize(date, from_currency, to_currency)
+      @date = date
+      @from_currency = from_currency
+      @to_currency = to_currency
     end
-    Money.add_rate("EUR", "EUR", 1.00)
 
-    from = Money.new(amount, @from_currency)
+    def self.currencies
+      @@ratesCollection.distinct('c').sort
+    end
 
-    from_base_rate = Money.default_bank.get_rate("EUR", from.currency)
-    to_base_rate = Money.default_bank.get_rate("EUR", @to_currency)
-    rate = to_base_rate / from_base_rate
+    def convert(amount)
+      @@ratesCollection.find('d' => @date).to_a.each do |doc|
+        Money.add_rate("EUR", doc['c'], doc['r'].to_f)
+      end
+      Money.add_rate("EUR", "EUR", 1.00)
 
-    Money.new(((Money::Currency.wrap(@to_currency).subunit_to_unit.to_f / from.currency.subunit_to_unit.to_f) * from.cents * rate), @to_currency).cents
+      from = Money.new(amount, @from_currency)
+
+      from_base_rate = Money.default_bank.get_rate("EUR", from.currency)
+      to_base_rate = Money.default_bank.get_rate("EUR", @to_currency)
+      rate = to_base_rate / from_base_rate
+
+      Money.new(((Money::Currency.wrap(@to_currency).subunit_to_unit.to_f / from.currency.subunit_to_unit.to_f) * from.cents * rate), @to_currency).cents
+    end
   end
 end
 
@@ -60,7 +66,7 @@ __END__
 %html
   %head
     %title Sinatra Currency
-    %link(rel='stylesheet' type='text/css' href='//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css')
+    %link(rel='stylesheet' type='text/css' href='//netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css')
     %link(rel='stylesheet' type='text/css' href='//alxlit.github.io/bootstrap-chosen/bootstrap.css')
     :css
       .jumbotron{
@@ -69,7 +75,7 @@ __END__
       }
 
   %body
-    %script(src='https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js' type='text/javascript')
+    %script(src='https://ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js' type='text/javascript')
     %script(src='http://harvesthq.github.io/chosen/chosen.jquery.js' type='text/javascript')
     %script(src='http://parsleyjs.org/parsley.js' type='text/javascript')
     :javascript
